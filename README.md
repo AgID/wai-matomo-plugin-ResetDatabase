@@ -11,4 +11,7 @@ Refer to [this Matomo FAQ](https://matomo.org/faq/plugins/faq_21/).
 ## Usage
 
 Put the dump files in the sql folder.
-Execute the command like: ./console wairesetdatabase:reset --db="filename" --db="filename"
+
+Execute the command like:
+
+`./console wairesetdatabase:reset --db="filename" --db="filename"`
