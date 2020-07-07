@@ -12,6 +12,10 @@ Refer to [this Matomo FAQ](https://matomo.org/faq/plugins/faq_21/).
 
 Put the dump files in the sql folder.
 
+You can specify more than one dump file.
+
+An absolute or relative path can be specified.
+
 Execute the command like:
 
-`./console wairesetdatabase:reset --db="filename" --db="filename"`
+`./console reset-database --dump="/path/to/dump.filename.first.sql" --dump="../path/to/dump.filename.second.sql"`

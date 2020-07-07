@@ -29,9 +29,9 @@ class Reset extends ConsoleCommand
      */
     protected function configure()
     {
-        $this->setName('wairesetdatabase:reset');
+        $this->setName('reset-database');
         $this->setDescription('Drop all tables and run sql from dump files');
-        $this->addOption('db', 'db', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Database filename');
+        $this->addOption('dump', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Database dump filename');
     }
 
     /**
@@ -43,11 +43,11 @@ class Reset extends ConsoleCommand
      * Ideally, the actual command is quite short as it acts like a controller. It should only receive the input values,
      * execute the task by calling a method of another class and output any useful information.
      *
-     * Execute the command like: ./console wairesetdatabase:reset --db="filename" --db="filename"
+     * Execute the command like: ./console reset-database --dump="/path/to/dump.filename.first.sql" --dump="../path/to/dump.filename.second.sql"
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $options = $input->getOption('db');
+        $options = $input->getOption('dump');
 
         $output->writeln("\n<comment>Check files</comment>\n");
 
@@ -57,50 +57,37 @@ class Reset extends ConsoleCommand
         }
 
         $files = array();
-        foreach ($options as $db) {
-            $filename = dirname(__DIR__, 1)."/sql/".$db;
+        foreach ($options as $dump) {
+            $dump = trim($dump);
+            $filename = $this->path_is_absolute($dump) ? $dump : $filename = __DIR__.DIRECTORY_SEPARATOR.$dump;
+            ;
             if (!file_exists($filename)) {
-                $output->writeln("<error>ERROR</error> $db not found in the folder");
+                $output->writeln("<error>ERROR</error> $filename not found in the folder");
                 $output->writeln("\nExit\n");
                 return;
             } else {
                 array_push($files, $filename);
-                $output->writeln("<info>OK</info> $db found in the folder");
+                $output->writeln("<info>OK</info> $filename found in the folder");
             }
         }
 
         $output->writeln("\n<comment>Start reset</comment>");
        
-
         Db::dropAllTables();
         $output->writeln("<info>All tables dropped</info>");
         
         foreach ($files as $file) {
             $output->writeln("<comment>Importing $file</comment>");
-
-            // Temporary variable, used to store current query
-            $query = '';
-            // Read in entire file
-            $lines = file($file);
-            // Loop through each line
-            foreach ($lines as $line) {
-                // Skip it if it's a comment
-                if (substr($line, 0, 2) == '--' || $line == '') {
-                    continue;
-                }
-    
-                // Add this line to the current segment
-                $query .= $line;
-                // If it has a semicolon at the end, it's the end of the query
-                if (substr(trim($line), -1, 1) == ';') {
-                    Db::exec($query);
-                    $query = '';
-                }
-            }
-           
+            $sql = file_get_contents($file);
+            Db::exec($sql);
             $output->writeln("<info>Imported</info>");
         }
 
         $output->writeln("\nReset done\n");
+    }
+
+    public function path_is_absolute($path)
+    {
+        return (DIRECTORY_SEPARATOR === $path[0]);
     }
 }
