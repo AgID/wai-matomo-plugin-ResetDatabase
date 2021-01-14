@@ -52,22 +52,21 @@ class Reset extends ConsoleCommand
         $output->writeln("\n<comment>Check files</comment>\n");
 
         if (empty($options)) {
-            $output->writeln("Insert at least one databse filename to import");
+            $output->writeln("Insert at least one database filename to import");
             return;
         }
 
         $files = array();
         foreach ($options as $dump) {
             $dump = trim($dump);
-            $filename = $this->path_is_absolute($dump) ? $dump : $filename = __DIR__.DIRECTORY_SEPARATOR.$dump;
-            ;
+            $filename = $this->path_is_absolute($dump) ? $dump : $filename = __DIR__ . DIRECTORY_SEPARATOR . $dump;
             if (!file_exists($filename)) {
-                $output->writeln("<error>ERROR</error> $filename not found in the folder");
+                $output->writeln("<error>ERROR</error> $filename not found");
                 $output->writeln("\nExit\n");
                 return;
             } else {
                 array_push($files, $filename);
-                $output->writeln("<info>OK</info> $filename found in the folder");
+                $output->writeln("<info>OK</info> $filename found");
             }
         }
 
