@@ -1,7 +1,7 @@
 {
     "name": "ResetDatabase",
     "description": "Create command to reset database",
-    "version": "0.1.0",
+    "version": "0.2.1",
     "theme": false,
     "require": {
         "piwik": ">=3.13.5-stable,<5.0.0-b1"
